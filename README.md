@@ -78,6 +78,10 @@ press edge. Driven with the `tone()` / `noTone()` Arduino API (PWM).
   verify + live button-state display on the OLED.
 - `button_test.ino` — standalone button test (OLED list, `[X]` when pressed).
 - `buzzer_test.ino` — passive piezo on D3: startup melody + beep on button press.
+- `vibration_test.ino` — 3-pin vibration motor on D9 + passive piezo on D3. OLED shows
+  a two-column status screen: left = 6 buttons, right = Buzzer/Vibro/Led indicators.
+  Holding a button keeps buzzer + vibro on continuously; release turns them off after
+  the timeout. Screen header: `SPI SH1106 128x64`.
 
 ## Notes
 
