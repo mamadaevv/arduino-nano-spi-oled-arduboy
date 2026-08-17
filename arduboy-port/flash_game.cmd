@@ -28,6 +28,10 @@ if "%ARDUBIN%"=="" set ARDUBIN=arduino-cli.exe
 set LIBDIR=%USERPROFILE%\Documents\Arduino\libraries
 set PORTLIB=%LIBDIR%\Arduboy2
 set FQBN=arduino:avr:nano:cpu=atmega328old
+REM Gotcha: LTO в arduino:avr@1.8.8 ломает линковку Arduboy2::begin() под 328p.
+REM Без -fno-lto игры, вызывающие begin() (HelloWorld, большинство каталожных), не соберутся.
+set NOLTO=--build-property build.extra_flags=-fno-lto
+set BUILDPATH=%TEMP%\arduboy_build
 
 echo [1/4] Проверка либы harbaum/Arduboy2 (Nano-port)...
 if not exist "%PORTLIB%\src\Arduboy2Core.cpp" (
@@ -51,20 +55,20 @@ if not exist "%SKETCH%" (
   exit /b 1
 )
 
-echo [2/4] Сборка "%GAME%" под %FQBN% ...
-%ARDUBIN% compile --fqbn %FQBN% "%SKETCH%"
+echo [2/4] Сборка "%GAME%" под %FQBN% (no-lto) ...
+%ARDUBIN% compile --fqbn %FQBN% %NOLTO% --build-path "%BUILDPATH%" "%SKETCH%"
 if errorlevel 1 (
   echo [ОШИБКА] сборка не удалась
   exit /b 1
 )
 
 if /i "%MODE%"=="build" (
-  echo [готово] только сборка. HEX в build/ папке примера.
+  echo [готово] только сборка. HEX в %BUILDPATH%
   exit /b 0
 )
 
 echo [3/4] Прошивка на %COM% ...
-%ARDUBIN% upload -p %COM% --fqbn %FQBN% "%SKETCH%"
+%ARDUBIN% upload -p %COM% --fqbn %FQBN% --input-dir "%BUILDPATH%"
 if errorlevel 1 (
   echo [ОШИБКА] прошивка не удалась (плата на другом COM? не видна в board list?)
   exit /b 1
