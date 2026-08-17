@@ -59,6 +59,6 @@ Onboard LED: D13 (also SCK — used for start indication before SPI init)
 - 3.3V display powers via SPI lines (parasite power) when VCC removed; to
   fully power off, also drive RES/D0/D1 low or cut all 7 wires.
 - FQBN: arduino:avr:nano:cpu=atmega328old
-- U8g2 constructor: U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI (SW_SPI, not HW_SPI!)
+- U8g2 constructor: U8G2_SSD1306_128X64_NONAME_1_4W_HW_SPI (HW_SPI, CS on D10)
   On ATmega328 D12=MISO is forced INPUT by HW-SPI, so CS on D12 can't go LOW →
-  black screen. SW_SPI bit-bangs all lines, letting CS stay on D12 (canonical Arduboy).
+  black screen. Use D10 (AVR SS pin) for CS with HW_SPI.

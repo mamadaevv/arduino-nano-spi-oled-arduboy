@@ -12,7 +12,7 @@ DIY Arduboy-clone wiring for an Arduino Nano (CH340 clone, `atmega328old`) with 
 | D1 (SDA)   | D11      |
 | RES        | D6       |
 | DC         | D4       |
-| CS         | D12 |
+| CS         | D10 |
 | VCC        | 3.3V     |
 | GND        | GND      |
 

@@ -4,7 +4,7 @@
 #define LED 13
 #define OLED_DC    4
 #define OLED_RESET 6
-#define OLED_CS    12
+#define OLED_CS    10
 #define BUZZER     5
 #define VIB        9
 
@@ -16,9 +16,8 @@
 #define BTN_A     7
 #define BTN_B     8
 
-// SW_SPI: on ATmega328 D12=MISO is forced to INPUT by HW-SPI, so it can't act as CS.
-// SW_SPI uses bit-banged GPIO, letting CS stay on D12 (canonical Arduboy layout).
-U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, /*clock=*/13, /*data=*/11, OLED_CS, OLED_DC, OLED_RESET);
+// HW_SPI with CS=D10 (AVR SS pin; not blocked by HW-SPI like D12=MISO)
+U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, OLED_CS, OLED_DC, OLED_RESET);
 
 const char* names[6] = {"UP", "DOWN", "LEFT", "RIGHT", "A", "B"};
 const uint8_t pins[6] = {BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT, BTN_A, BTN_B};
@@ -81,7 +80,7 @@ void loop() {
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_5x7_tf);
 
-  // header: display type / resolution / address
+  // header: display type / resolution
   u8g2.setCursor(0, 8);
   u8g2.print("SPI SSD1306 128x64");
 
