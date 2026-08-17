@@ -43,6 +43,11 @@ should be reverted to `2` since this is not an SH1106 module.
 
 If you ever connect a real SH1106 display, revert line 473 back to `2`.
 
+> ⚠️ **ATmega328 (Nano) gotcha:** D12 = MISO. HW_SPI (4W_HW_SPI) forces MISO to
+> INPUT, so a CS on D12 can never go LOW → black screen. **Use 4W_SW_SPI**
+> (bit-bang) instead, then CS=D12 works as a plain GPIO:
+> `U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, 13, 11, OLED_CS, OLED_DC, OLED_RESET);`
+
 ## Build & flash
 
 ```bash
