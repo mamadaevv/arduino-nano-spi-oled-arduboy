@@ -59,11 +59,25 @@ arduino-cli upload  -p COM8  --fqbn arduino:avr:nano:cpu=atmega328old SPI_OLED_t
 
 (SRAM usage is ~84% with U8g2 full-buffer — that is just a warning, it runs fine.)
 
+### Buzzer (D3, passive piezo)
+A passive piezo buzzer is wired to **D3** (the canonical Arduboy audio pin). Plays
+a short startup melody on boot and a short beep (880 Hz, 80 ms) on each button
+press edge. Driven with the `tone()` / `noTone()` Arduino API (PWM).
+
+| Part  | Nano pin |
+|-------|----------|
+| Buzzer+ | D3      |
+| Buzzer- | GND     |
+
+> If you have an *active* (self-driving) piezo instead of a passive one, replace
+> `tone()`/`noTone()` with `digitalWrite(BUZZER, HIGH/LOW)`.
+
 ## Files
 
 - `SPI_OLED_test/SPI_OLED_test.ino` — current combined sketch: white-screen
   verify + live button-state display on the OLED.
 - `button_test.ino` — standalone button test (OLED list, `[X]` when pressed).
+- `buzzer_test.ino` — passive piezo on D3: startup melody + beep on button press.
 
 ## Notes
 
