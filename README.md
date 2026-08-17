@@ -1,7 +1,7 @@
-# Arduino Nano — 7-pin SPI SH1106 OLED + Arduboy buttons
+# Arduino Nano — 7-pin SPI SSD1306 OLED + Arduboy buttons
 
 DIY Arduboy-clone wiring for an Arduino Nano (CH340 clone, `atmega328old`) with a
-7-pin SPI OLED module (SH1106, 128×64) and a 6-button Arduboy-style keypad.
+7-pin SPI OLED module (**SSD1306**, 128×64, **3.3V** — no onboard regulator, feed 3.3V not 5V) and a 6-button Arduboy-style keypad.
 
 ## Wiring
 
@@ -13,7 +13,7 @@ DIY Arduboy-clone wiring for an Arduino Nano (CH340 clone, `atmega328old`) with 
 | RES        | D5       |
 | DC         | D4       |
 | CS         | D6       |
-| VCC        | 5V       |
+| VCC        | 3.3V     |
 | GND        | GND      |
 
 > CS must go to a driven pin (D6), not GND — otherwise chip-select is not
@@ -32,23 +32,16 @@ Each button: one side to the pin, other side to GND. Pins are set to
 | A      | 7        |
 | B      | 8        |
 
-## Required patch: U8g2 SH1106 x-offset
+## U8g2 offset note
 
-The 7-pin SH1106 module shows 2 columns of garbage on the left and does not
-use the full 128-px width until you fix the driver's default x-offset.
+The module is **SSD1306** (confirmed: a detector sketch built with the SSD1306
+driver lit a clean white screen; an SH1106 driver would have stayed black). The
+controller's default x-offset in U8g2 (`u8x8_d_ssd1306_128x64_noname.c`, line 353)
+is currently `0` (was `2` originally) and the screen is clean with it. Line 473
+(SH1106 driver, a different chip) was also changed to `0` by mistake earlier — it
+should be reverted to `2` since this is not an SH1106 module.
 
-File: `U8g2/src/clib/u8x8_d_ssd1306_128x64_noname.c`
-SH1106 128×64 driver — around **line 473**:
-
-```c
-/* default_x_offset = */ 2,   →   0,
-```
-
-After this patch the full screen is clean white with no garbage columns.
-
-⚠️ **Warning:** the same patch also changes **line 353** (SSD1306 128×64 driver)
-from `2` to `0`. If you later connect a 4-pin I2C SSD1306 display with the same
-U8g2 install, revert that line back to `2`, otherwise the image will be shifted.
+If you ever connect a real SH1106 display, revert line 473 back to `2`.
 
 ## Build & flash
 
@@ -81,11 +74,11 @@ press edge. Driven with the `tone()` / `noTone()` Arduino API (PWM).
 - `vibration_test.ino` — 3-pin vibration motor on D9 + passive piezo on D3. OLED shows
   a two-column status screen: left = 6 buttons, right = Buzzer/Vibro/Led indicators.
   Holding a button keeps buzzer + vibro on continuously; release turns them off after
-  the timeout. Screen header: `SPI SH1106 128x64`.
+  the timeout. Screen header: `SPI SSD1306 128x64`.
 
 ## Notes
 
 - Buzzer on D9 is dead → startup indication uses the onboard LED (D13), 3 blinks.
 - I2C scanner does not see this module (it is SPI, not I2C).
-- Arduboy2 library targets SSD1306; SH1106 may need adaptation for off-the-shelf
+- Arduboy2 library targets SSD1306, so off-the-shelf Arduboy sketches should work
   Arduboy sketches (not yet verified).
